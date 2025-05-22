@@ -62,7 +62,7 @@ if uploaded_file:
     if selected_tab == "Service Type Cell Wise":
         col1, col2, col3 = st.columns(3)
         chart_type = col1.selectbox("Chart Type", ["Bar Chart", "Pie Chart"])
-        cell_option = col2.selectbox("Select Cell", ["All Cells"] + sorted(df['Cell_id'].astype(str).unique()))
+        cell_option = col2.selectbox("Select Cell", ["All Cells"] + sorted(df['Cell_id'].dropna().astype(int).astype(str).unique()))
         time_range = col3.selectbox("Time Range",
                                     ["Last 15 Minutes", "Last 30 Minutes", "Last 5 Hours", "Last 12 Hours",
                                      "Last 24 Hours"])
@@ -153,7 +153,7 @@ if uploaded_file:
 
         # Required columns check
 
-        required_deploy_cols = ['Service Type', 'Latency (ms)', 'Bandwidth', 'Slice ID']
+        required_deploy_cols = ['Service Type', 'Latency (ms)', 'Bandwidth', 'Slice ID' ,'Slice Type']
 
         for col in required_deploy_cols:
 
@@ -173,13 +173,17 @@ if uploaded_file:
 
             bandwidth = group['Bandwidth'].iloc[0]
 
-            slice_id = group['Slice ID'].iloc[0]
+            slice_id = int(group['Slice ID'].iloc[0])
+
+            slice_type = group['Slice Type'].iloc[0]
 
             user_count = len(group)
 
             summary_data.append({
 
                 'Slice ID': slice_id,
+
+                'Slice Type': slice_type,
 
                 'Service Type': service,
 
@@ -227,8 +231,7 @@ if uploaded_file:
 
         ])
 
-    st.write(styled_df)
+        st.write(styled_df)
 
 else:
     st.info("📥 Please upload an Excel file to get started.")
-
